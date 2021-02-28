@@ -3,3 +3,4 @@
 /bazel-testlogs
 /bazel-genfiles
 /bazel-adv-trainings-2021
+compile_commands.json

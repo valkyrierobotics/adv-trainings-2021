@@ -1,0 +1,6 @@
+cc_library(
+  name = "manager_lib",
+  srcs = [ "manager.cc" ],
+  hdrs = [ "manager.hh" ],
+  deps = [ "@//src/util:util" ],
+)
