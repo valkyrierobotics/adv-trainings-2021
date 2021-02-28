@@ -1,0 +1,9 @@
+cc_test(
+    name = "example_test",
+    srcs = ["tests.cc"],
+    tags = ["manual"],
+    deps = [
+        "@com_github_google_googletest//:gtest",
+        "@com_github_google_googletest//:gtest_main",
+    ],
+)

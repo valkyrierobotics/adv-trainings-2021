@@ -1,0 +1,15 @@
+cc_library(
+    name = "util",
+    srcs = ["util.cc"],
+    hdrs = ["util.hh"],
+)
+
+cc_test(
+    name = "util_test",
+    srcs = ["util_test.cc"],
+    deps = [
+        ":util",
+        "@com_github_google_googletest//:gtest",
+        "@com_github_google_googletest//:gtest_main",
+    ],
+)
