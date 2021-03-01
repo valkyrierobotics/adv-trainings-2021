@@ -1,5 +1,2 @@
-/bazel-bin
-/bazel-out
-/bazel-testlogs
-/bazel-genfiles
-/bazel-adv-trainings-2021
+/bazel-*
+compile_commands.json
