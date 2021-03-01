@@ -1,6 +1,12 @@
 cc_library(
-  name = "manager_lib",
-  srcs = [ "manager.cc" ],
-  hdrs = [ "manager.hh" ],
-  deps = [ "@//src/util:util" ],
+    name = "manager_lib",
+    srcs = ["manager.cc"],
+    hdrs = ["manager.hh"],
+    deps = ["@//src/util:util"],
+)
+
+cc_binary(
+    name = "manager",
+    srcs = ["manager_main.cc"],
+    deps = [":manager_lib"],
 )
