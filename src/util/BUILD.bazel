@@ -2,6 +2,7 @@ cc_library(
     name = "util",
     srcs = ["util.cc"],
     hdrs = ["util.hh"],
+    visibility = ["//visibility:public"],
 )
 
 cc_test(

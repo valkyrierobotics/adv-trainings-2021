@@ -14,7 +14,7 @@ TEST(JoystickTests, RoundtripJoystick) {
   auto ret = encode_joystick(joystick);
   unsigned int value = *((unsigned int *)ret.data());
 
-  EXPECT_EQ(value, 0xFEFF0081);
+  ASSERT_EQ(value, 0xFEFF0081);
 
   auto decoded_joystick = decode_joystick(ret);
   ASSERT_TRUE(decoded_joystick.has_value());
@@ -39,7 +39,7 @@ TEST(OutputTests, RoundtripOutput) {
   auto ret = encode_output(output);
   unsigned int value = *((unsigned int *)ret.data());
 
-  EXPECT_EQ(value, 0xFE7F0005);
+  ASSERT_EQ(value, 0xFE7F0005);
 
   auto decoded_output = decode_output(ret);
 
@@ -61,7 +61,7 @@ TEST(SensorTests, RoundtripSensor) {
   auto ret = encode_sensors(sensors);
   unsigned int value = *((unsigned int *)ret.data());
 
-  EXPECT_EQ(value, 0xAF800002);
+  ASSERT_EQ(value, 0xAF800002);
 
   auto decoded_sensor = decode_sensors(ret);
 

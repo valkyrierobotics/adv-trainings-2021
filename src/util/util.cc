@@ -22,8 +22,8 @@ std::array<unsigned char, 4> encode_joystick(const Joystick &joystick) {
 
   // Add 1 to get value between 0 and 2, multiply by 127.5 to get between 0 and
   // 255
-  ret[2] = static_cast<unsigned char>(std::floor(((joystick.x + 1) * 127.5)));
-  ret[1] = static_cast<unsigned char>(std::floor(((joystick.y + 1) * 127.5)));
+  ret[2] = static_cast<unsigned char>((((joystick.x + 1) * 127.5)));
+  ret[1] = static_cast<unsigned char>((((joystick.y + 1) * 127.5)));
   ret[0] = 0;
 
   ret[0] |= (joystick.enabled << 7);
@@ -33,15 +33,14 @@ std::array<unsigned char, 4> encode_joystick(const Joystick &joystick) {
   return ret;
 }
 
-std::optional<Joystick>
-decode_joystick(const std::array<unsigned char, 4> &raw) {
+std::optional<Joystick> decode_joystick(const std::array<unsigned char, 4> &raw) {
   if (raw[3] != 0xFE) {
     return std::nullopt;
   }
 
   Joystick ret;
-  ret.x = ((static_cast<float>(raw[2]) - 127.5) / 127.5);
-  ret.y = ((static_cast<float>(raw[1]) - 127.5) / 127.5);
+  ret.x = ((static_cast<float>(raw[2]) - 127) / 127.5);
+  ret.y = ((static_cast<float>(raw[1]) - 127) / 127.5);
 
   ret.enabled = raw[0] & (1 << 7);
   ret.gripper_toggle = raw[0] & (1 << 2);
@@ -62,7 +61,7 @@ std::optional<Output> decode_output(const std::array<unsigned char, 4> &raw) {
 }
 
 std::array<unsigned char, 4> encode_sensors(const Sensors &sensors) {
-  std::array<unsigned char, 4> ret;
+  std::array<unsigned char, 4> ret{};
   return ret;
 }
 

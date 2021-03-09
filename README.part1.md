@@ -69,7 +69,7 @@ The sensor socket consists of messages of the following form:
 | 8 bits | 12 bits | 10 bits | 1 bit | 1 bit |
 
 + **Header Byte:** Will always be equal to `0xAF`
-+ **Arm Position:** Value of `0x000` is `0 * π` and a value of `0xFFF` is equal to `4096/4096 * π`, i.e the encoded value stores the fraction of π out of 4096. 
++ **Arm Position:** Value of `0x000` is `0 * π` and a value of `0xFFF` is equal to `4095/4096 * π`, i.e the encoded value stores the fraction of π out of 4096. Note that `4096/4096` would wrap around and be the same as `0x000`
 + **Arm lower/upper limit:** Value will be 1 if the arm is physically at the limit (*could be* unrelated to the arm encoder position e.g if the encoder is broken).
 
 ### `./output` socket
@@ -96,14 +96,14 @@ These methods are defined for you but currently left blank. These methods are
 responsible from converting from a set of 4 bytes (i.e an `unsigned char` array)
 to a structure representing the socket's message and visa versa.
 
-Once you have implemented these methods correctly, the command `bazel test //...**
+Once you have implemented these methods correctly, the command `bazel test //...`
 should show all tests are passing. If any tests fail, your implementation is
 incorrect. If you believe the tests are in error, please reach out to me ASAP.
 
 #### Hints
 + Most of the encoding/decoding follows from the example I have filled in.
 + The only tricky one is the 12 bit arm encoding. First convert the float to a fraction
-of π, i.e an integer value between 0 and 4096. Then we want to take the bottom 4 bits
+of π, i.e an integer value between 0 and 4095. Then we want to take the bottom 4 bits
 of that integer and put them into the top 4 bytes of the 1 index of the array, and the top
 8 bits of that integer and put them into the 2 index of the array. So, you can take
 `your_int = 0x876` and mask out (i.e get) only the top bytes with `your_int & 0xFF0` which
@@ -123,7 +123,7 @@ drivetrain doesn't need the arm position) and then sent over Unix sockets to the
 processes for each subsystem.
 
 For example, the superstructure socket could listen on `./superstructure_in` and write to
-`./superstructure_output**.
+`./superstructure_output`.
 
 **Figuring out how all this runs together will take the longest.**
 
@@ -152,6 +152,12 @@ cc_binary(
 )
 ```
 
+I recommend building both superstructure and drivetrain first so that you can understand
+the concept before working on manager as it's the worst. You can test each implementation
+using `test_hook.py` using `python test_hook.py listen $socket_name` to provide the
+socket for your program to connect to. Manually typing in valid messages will allow
+you to see the output from your application.
+
 Once you have completed everything, you can build everything using `./bazel build //...`
 and copy all the binaries from `bazel-bin` to a new folder, so that
 your folder looks like this (your file names can be different):
@@ -161,15 +167,27 @@ your folder looks like this (your file names can be different):
 |- superstructure.exe
 |- drivetrain.exe
 |- manager.exe
+|- test_hook.py
 ```
 
 You should run `./manager.exe` followed by `./superstructure.exe` and `./drivetrain.exe`.
-You should then set up a netcat process to listen for anything from the output socket via
-`nc -U './output' | xxd`. This will print out in hexadecimal any outputs.
-The joystick and sensor packages can be simulated via the following `netcat` commands:
-`echo '\xAF000000' | nc -Ul './sensors` for `./sensors` and `echo '\xFE000000' | nc -Ul './joysticks`.
 
-Hopefully from this example it is evident that you can send any hex value to a socket using `netcat -Ul` and receive using `netcat -U`. This will allow you to build and test individual components, i.e test the superstructure subsystem without needing to run the manager.
+After this, you can run `python test_hook.py listen $socket_name` and
+`python test_hook connect $socket_name` in order to either provide a socket for `manager.exe`
+to connect to, or connect to a socket `manager.exe` has provided. Remember that we
+have set this up so that the superstructure and drivetrain connect to sockets that manager
+provides, and manager also provides the output socket, but connects to the sensors and
+joysticks sockets. Therefore, the correct whole-system test probably looks like (
+with each command in a different terminal):
+
+```sh
+$ python test_hook.py listen ./joysticks
+$ python test_hook.py listen ./sensors
+$ ./manager.exe
+$ ./superstructure.exe
+$ ./drivetrain.exe
+$ python test_hook.py connect ./output
+```
 
 #### **!! WARNING !!**
 

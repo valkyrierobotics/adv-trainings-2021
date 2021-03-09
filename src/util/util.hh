@@ -10,11 +10,11 @@
 // Bits 31-24: Header byte (ALWAYS 0xFE)
 // Bits 23-16: Joystick x byte (0 maps to -1, 255 maps to 1)
 // Bits 15-8: Joystick y byte (0 maps to -1, 255 maps to 1)
-// Bit  8   : Enabled
-// Bit  7-3 : Reserved
-// Bit 2    : Gripper open/close toggle
-// Bit 1    : Roller forwards when held
-// Bit 0    : Roller reversed when held
+// Bit  7   : Enabled
+// Bit  6-3 : Reserved
+// Bit  2   : Gripper open/close toggle
+// Bit  1   : Roller forwards when held
+// Bit  0   : Roller reversed when held
 struct Joystick {
   float x, y;
   bool enabled, gripper_toggle, roller_fwd, roller_rev;

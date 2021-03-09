@@ -1,0 +1,7 @@
+cc_binary(
+    name = "drivetrain_main",
+    srcs = [ "socket_example.cc" ],
+    deps = [
+        "//src/util",
+    ]
+)
