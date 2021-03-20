@@ -53,15 +53,15 @@ std::optional<Joystick> decode_joystick(const std::array<unsigned char, 4> &raw)
 std::array<unsigned char, 4> encode_output(const Output &raw) {
   std::array<unsigned char, 4> ret;
   
-  ret[3] = raw.dt_left_voltage;
-  ret[2] = raw.dt_right_voltage;
-  ret[1] = raw.arm_voltage;
+  ret[3] = (int)((raw.dt_left_voltage + 12) * 254/24);
+  ret[2] = (int)((raw.dt_right_voltage + 12) * 254/24);
+  ret[1] = (int)((raw.arm_voltage + 12) * 254/24);
   ret[0] = 0;
 
-  ret[0] |= (joystick.enabled << 7); //Incorrect Logic
-  ret[0] |= (joystick.gripper_toggle << 2);
-  ret[0] |= (joystick.roller_fwd << 1);
-  ret[0] |= (joystick.roller_rev << 0);
+  ret[0] |= (raw.enabled << 7); 
+  ret[0] |= (raw.gripper_toggle << 2);
+  ret[0] |= (raw.roller_fwd << 1);
+  ret[0] |= (raw.roller_rev << 0);
   return ret;
 
 }
@@ -73,9 +73,9 @@ std::optional<Output> decode_output(const std::array<unsigned char, 4> &raw) {
   }
 
   Output ret;
-  ret.dt_left_voltage = raw[3];
-  ret.dt_right_voltage = raw[2];
-  ret.arm_voltage = raw[1];
+  ret.dt_left_voltage = (raw[3] / (254/24)) - 12;
+  ret.dt_right_voltage = (raw[2] / (254/24)) - 12;
+  ret.arm_voltage = (raw[1] / (254/24)) - 12;
 
   ret.gripper_open = raw[0] & (1 << 2);
   ret.roller_forward = raw[0] & (1 << 1);
@@ -87,23 +87,33 @@ std::optional<Output> decode_output(const std::array<unsigned char, 4> &raw) {
 std::array<unsigned char, 4> encode_sensors(const Sensors &sensors) {
 std::array<unsigned char, 4> ret{};
 
-  ret[2] = sensors.arm_position;
-  ret[1] = sensors.lower_limit_on;
-  ret[0] = sensors.upper_limit_on;
+  ret[1] = sensors.arm_position;
+  
+  int a = (sensors.arm_position/M_PI) * 4096;
+  
+  ret[2] = a >> 4;
+  ret[1] = (a & 0x00F) << 4;  
+  ret[0] = sensors.lower_limit_on;
+  ret[0] = sensors.upper_limit_on;  
 
   return ret;
 }
 
 std::optional<Sensors> decode_sensors(const std::array<unsigned char, 4> &raw) {
 
-  if (raw[3] != 0xFE) {
+  if (raw[3] != 0xAF) {
     return std::nullopt;
   }
 
   Sensors ret;
-  ret.arm_position = raw[2]; //to convert hex value back to float
-  ret.lower_limit_on = raw[1];
+
+  int a = raw[2];
+  
+  ret.arm_position = raw[1]; 
+  ret.lower_limit_on = raw[0];
   ret.upper_limit_on = raw[0];
+
+  ret.arm_position = (a/4096) * M_PI;
 
   return std::optional(ret);
 }
