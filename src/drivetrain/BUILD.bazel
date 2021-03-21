@@ -1,0 +1,20 @@
+cc_library(
+    name = "drivetrain",
+    srcs = [
+        "drivetrain.cc",
+    ],
+    hdrs = [
+        "drivetrain.hh",
+    ],
+    visibility = [ "//visibility:public" ],
+)
+
+cc_test(
+    name = "drivetrain_test",
+    srcs = [ "drivetrain_test.cc" ],
+    deps = [
+        ":drivetrain",
+        "@com_github_google_googletest//:gtest_main",
+        "@com_github_google_googletest//:gtest",
+    ]
+)

@@ -31,7 +31,7 @@ stopped, rolling forwards, or rolling backwards.
 For part 1, the robot is required to achieve the following functionality.
 
 + Set the drivetrain left output voltage to the difference of the joystick y value and joystick x value.
-+ Set the drivetrain left output voltage to the sum of the joystick y value and joystick x value.
++ Set the drivetrain right output voltage to the sum of the joystick y value and joystick x value.
 + Use the value of button 1 to toggle the gripper open/closed.
 + Use the value of button 2 to move the roller forwards when down.
 + Use the value of button 3 to move the roller backwards when down.

@@ -14,7 +14,7 @@ TEST(JoystickTests, RoundtripJoystick) {
   auto ret = encode_joystick(joystick);
   unsigned int value = *((unsigned int *)ret.data());
 
-  EXPECT_EQ(value, 0xFEFF0081);
+  EXPECT_EQ(value, 0xFEFE0081);
 
   auto decoded_joystick = decode_joystick(ret);
   ASSERT_TRUE(decoded_joystick.has_value());
